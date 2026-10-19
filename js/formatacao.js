@@ -129,6 +129,26 @@ function ordenarPorFiltros(cidades, filtros) {
     .map((item) => item.cidade);
 }
 
+// Posição da barra de temperatura de um dia dentro da faixa da semana, em porcentagem.
+function posicaoFaixa(minimo, maximo, semanaMin, semanaMax) {
+  const amplitude = semanaMax - semanaMin;
+  if (amplitude <= 0) return { inicio: 0, largura: 100 };
+
+  const largura = Math.max(6, ((maximo - minimo) / amplitude) * 100);
+  const inicio = Math.min(100 - largura, Math.max(0, ((minimo - semanaMin) / amplitude) * 100));
+  return { inicio, largura };
+}
+
+// Frase de resumo a partir das probabilidades de chuva do próximo período.
+function resumoChuva(probabilidades) {
+  const validas = probabilidades.filter((p) => p !== null && p !== undefined);
+  const maior = Math.max(0, ...validas);
+
+  if (maior >= 50) return "Chuva provável nas próximas horas.";
+  if (maior >= 30) return "Possibilidade de chuva nas próximas horas.";
+  return "Sem chuva prevista para as próximas horas.";
+}
+
 // Intensidade da chuva em mm no intervalo atual.
 function intensidadeChuva(mm) {
   if (mm === null || mm === undefined || mm < 0.2) return "nenhuma";

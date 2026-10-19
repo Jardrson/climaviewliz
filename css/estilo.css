@@ -440,6 +440,10 @@ h2 {
   gap: 14px;
 }
 
+#clima > h2 {
+  justify-self: start;
+}
+
 /* Cartão de vidro: o fundo mostra através, com borda suave e sombra discreta. */
 .agora,
 .detalhe,
@@ -459,7 +463,7 @@ h2 {
 
 .cidade {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.3;
 }
@@ -610,7 +614,7 @@ h2 {
 
 .dia {
   display: grid;
-  grid-template-columns: 96px 28px 1fr auto auto;
+  grid-template-columns: 96px 28px auto minmax(80px, 1fr) auto auto;
   align-items: center;
   gap: 12px;
   padding: 13px 18px;
@@ -903,4 +907,49 @@ body[data-vento="medio"] .camada-nuvens {
 
 body[data-vento="forte"] .camada-nuvens {
   animation-duration: 16s;
+}
+
+/* ---------- Resumo, faixa de temperatura e sol ---------- */
+
+.resumo {
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 20px;
+  background: var(--vidro);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--borda);
+  box-shadow: var(--sombra);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Barra que mostra a faixa de temperatura do dia dentro da semana. */
+.dia-faixa {
+  position: relative;
+  height: 6px;
+  min-width: 60px;
+  border-radius: 999px;
+  background: var(--borda);
+}
+
+.dia-barra {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--inicio, 0%);
+  width: var(--largura, 100%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5eb8ff, #ffb14a);
+}
+
+@media (min-width: 900px) {
+  #clima > .resumo {
+    grid-column: 1 / -1;
+  }
+
+  .dia-faixa {
+    width: 100%;
+  }
 }

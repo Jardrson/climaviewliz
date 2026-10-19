@@ -89,8 +89,12 @@ function exibirClima({ local, previsao, salvoEm }, offline) {
   aplicarClima(categoriaClima(atual.weather_code, atual.is_day !== 0), atual);
 
   renderizarDetalhes(atual, diario);
-  renderizarHoras(previsao.hourly, atual.time);
+  const probabilidades = renderizarHoras(previsao.hourly, atual.time);
   renderizarDias(diario);
+
+  const resumo = $("resumo");
+  resumo.textContent = resumoChuva(probabilidades.slice(0, 8));
+  resumo.hidden = false;
 
   // Reinicia a animação de entrada a cada cidade.
   const secao = $("clima");
@@ -119,6 +123,8 @@ function renderizarDetalhes(atual, diario) {
     ["💨", "Vento", `${arredondar(atual.wind_speed_10m)} km/h ${direcaoVento(atual.wind_direction_10m)}`.trim()],
     ["💧", "Umidade", percentual(atual.relative_humidity_2m)],
     ["☀️", "Índice UV (máx.)", textoUV(diario.uv_index_max[0])],
+    ["🌅", "Nascer do sol", diario.sunrise ? horaDeIso(diario.sunrise[0]) : "—"],
+    ["🌇", "Pôr do sol", diario.sunset ? horaDeIso(diario.sunset[0]) : "—"],
   ];
 
   $("detalhes").replaceChildren(
@@ -142,7 +148,9 @@ function renderizarHoras(horario, horaAtual) {
   if (inicio < 0) inicio = 0;
 
   const itens = [];
+  const probabilidades = [];
   for (let i = inicio; i < Math.min(inicio + 24, horario.time.length); i++) {
+    probabilidades.push(horario.precipitation_probability[i]);
     const [condicao, icone] = descricaoCondicao(horario.weather_code[i]);
     const li = criar("li", "hora");
     li.style.setProperty("--i", i - inicio);
@@ -157,17 +165,32 @@ function renderizarHoras(horario, horaAtual) {
   }
 
   $("horas").replaceChildren(...itens);
+  return probabilidades;
 }
 
 function renderizarDias(diario) {
+  // Faixa da semana: cada dia mostra a própria amplitude dentro dela.
+  const semanaMin = Math.min(...diario.temperature_2m_min);
+  const semanaMax = Math.max(...diario.temperature_2m_max);
+
   const itens = diario.time.map((data, i) => {
     const [condicao, icone] = descricaoCondicao(diario.weather_code[i]);
+    const posicao = posicaoFaixa(diario.temperature_2m_min[i], diario.temperature_2m_max[i], semanaMin, semanaMax);
+
+    const barra = criar("span", "dia-barra");
+    barra.style.setProperty("--inicio", `${posicao.inicio}%`);
+    barra.style.setProperty("--largura", `${posicao.largura}%`);
+
+    const faixa = criar("span", "dia-faixa");
+    faixa.append(barra);
+
     const li = criar("li", "dia");
     li.style.setProperty("--i", i);
     li.append(
       criar("span", "dia-rotulo", i === 0 ? "Hoje" : rotuloDia(data)),
       decorativo(criar("span", "dia-icone", icone)),
       criar("span", "dia-condicao", condicao),
+      faixa,
       criar("span", "dia-temp", `${arredondar(diario.temperature_2m_max[i])}° / ${arredondar(diario.temperature_2m_min[i])}°`),
       criar("span", "dia-chuva", `💧 ${percentual(diario.precipitation_probability_max[i])}`)
     );
