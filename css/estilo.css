@@ -827,3 +827,80 @@ h2 {
     animation: none !important;
   }
 }
+
+/* ---------- Características do tempo ----------
+   Estas regras vêm por último, para sobrescrever as camadas de cenário.
+   Os valores vêm dos atributos data-* do body, definidos em app.js. */
+
+/* Temperatura: calor alaranjado ou frio azulado. */
+.camada-calor {
+  background: radial-gradient(ellipse 70% 40% at 50% 110%, rgba(255, 150, 60, 0.38), transparent 70%);
+}
+
+.camada-frio {
+  background: linear-gradient(180deg, rgba(160, 205, 255, 0.24), transparent 60%);
+}
+
+body[data-temp="quente"] .camada-calor,
+body[data-temp="frio"] .camada-frio {
+  opacity: 1;
+}
+
+/* Chuva: sem chuva, fraca, moderada ou forte. */
+body[data-clima="chuva"][data-chuva="nenhuma"] .camada-chuva,
+body[data-clima="tempestade"][data-chuva="nenhuma"] .camada-chuva {
+  opacity: 0.35;
+  animation-duration: 1.6s;
+}
+
+body[data-clima="chuva"][data-chuva="fraca"] .camada-chuva,
+body[data-clima="tempestade"][data-chuva="fraca"] .camada-chuva {
+  opacity: 0.5;
+  animation-duration: 1.3s;
+}
+
+body[data-clima="chuva"][data-chuva="moderada"] .camada-chuva,
+body[data-clima="tempestade"][data-chuva="moderada"] .camada-chuva {
+  animation-duration: 0.8s;
+}
+
+body[data-clima="chuva"][data-chuva="forte"] .camada-chuva,
+body[data-clima="tempestade"][data-chuva="forte"] .camada-chuva {
+  animation-duration: 0.42s;
+  background-image:
+    repeating-linear-gradient(104deg, transparent 0 14px, rgba(205, 225, 255, 0.45) 14px 15px),
+    repeating-linear-gradient(104deg, transparent 0 31px, rgba(205, 225, 255, 0.3) 31px 32px);
+}
+
+/* Nuvens: a cobertura define a opacidade. Chuva e tempestade também podem ter nuvens. */
+body[data-nuvens="pouca"] {
+  --nuvens-opacidade: 0.35;
+}
+
+body[data-nuvens="media"] {
+  --nuvens-opacidade: 0.7;
+}
+
+body[data-nuvens="muita"] {
+  --nuvens-opacidade: 1;
+}
+
+body[data-clima="nuvens"] .camada-nuvens,
+body[data-clima="chuva"] .camada-nuvens,
+body[data-clima="tempestade"] .camada-nuvens,
+body[data-clima="nevoeiro"] .camada-nuvens {
+  opacity: var(--nuvens-opacidade, 1);
+}
+
+/* Vento: nuvens lentas quando calmo, rápidas quando forte. */
+body[data-vento="calmo"] .camada-nuvens {
+  animation-duration: 70s;
+}
+
+body[data-vento="medio"] .camada-nuvens {
+  animation-duration: 38s;
+}
+
+body[data-vento="forte"] .camada-nuvens {
+  animation-duration: 16s;
+}

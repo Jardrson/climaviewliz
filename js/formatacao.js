@@ -129,6 +129,38 @@ function ordenarPorFiltros(cidades, filtros) {
     .map((item) => item.cidade);
 }
 
+// Intensidade da chuva em mm no intervalo atual.
+function intensidadeChuva(mm) {
+  if (mm === null || mm === undefined || mm < 0.2) return "nenhuma";
+  if (mm < 1) return "fraca";
+  if (mm < 4) return "moderada";
+  return "forte";
+}
+
+// Cobertura de nuvens em porcentagem.
+function nivelNuvens(percentual) {
+  if (percentual === null || percentual === undefined) return "media";
+  if (percentual < 30) return "pouca";
+  if (percentual < 70) return "media";
+  return "muita";
+}
+
+// Vento em km/h.
+function nivelVento(kmh) {
+  if (kmh === null || kmh === undefined) return "medio";
+  if (kmh < 12) return "calmo";
+  if (kmh < 30) return "medio";
+  return "forte";
+}
+
+// Temperatura em °C, para o tom do fundo.
+function faixaTemperatura(celsius) {
+  if (celsius === null || celsius === undefined) return "ameno";
+  if (celsius <= 8) return "frio";
+  if (celsius >= 30) return "quente";
+  return "ameno";
+}
+
 // Escolhe o cenário de fundo a partir do código WMO e de dia ou noite.
 function categoriaClima(codigo, ehDia = true) {
   if ([95, 96, 99].includes(codigo)) return "tempestade";

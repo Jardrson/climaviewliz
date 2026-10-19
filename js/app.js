@@ -86,7 +86,7 @@ function exibirClima({ local, previsao, salvoEm }, offline) {
   $("sensacao").textContent = `Sensação de ${arredondar(atual.apparent_temperature)}°C`;
   $("minmax").textContent = `Máxima ${arredondar(diario.temperature_2m_max[0])}°C · Mínima ${arredondar(diario.temperature_2m_min[0])}°C`;
 
-  aplicarClima(categoriaClima(atual.weather_code, atual.is_day !== 0));
+  aplicarClima(categoriaClima(atual.weather_code, atual.is_day !== 0), atual);
 
   renderizarDetalhes(atual, diario);
   renderizarHoras(previsao.hourly, atual.time);
@@ -100,9 +100,17 @@ function exibirClima({ local, previsao, salvoEm }, offline) {
   secao.classList.add("entrar");
 }
 
-// Cenário de fundo: o CSS troca as camadas conforme data-clima.
-function aplicarClima(categoria) {
-  document.body.dataset.clima = categoria;
+// Cenário e características do fundo. O CSS lê estes atributos do body:
+// data-clima escolhe as camadas; os demais ajustam intensidade, nuvens, vento e tom.
+function aplicarClima(categoria, atual) {
+  const body = document.body.dataset;
+  const temChuva = categoria === "chuva" || categoria === "tempestade";
+
+  body.clima = categoria;
+  body.chuva = temChuva ? intensidadeChuva(atual.precipitation) : "nenhuma";
+  body.nuvens = nivelNuvens(atual.cloud_cover);
+  body.vento = nivelVento(atual.wind_speed_10m);
+  body.temp = faixaTemperatura(atual.temperature_2m);
 }
 
 function renderizarDetalhes(atual, diario) {
