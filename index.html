@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Previsão do tempo para qualquer cidade do Brasil ou do exterior.">
+  <title>ClimaView Hash</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9B%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-linha">
+      <h1>ClimaView Hash</h1>
+      <button id="alternar-tema" class="alternar-tema" type="button">Modo escuro</button>
+    </div>
+    <form id="form-busca" class="busca" role="search">
+      <label for="campo-busca" class="sr-only">Buscar cidade</label>
+      <input id="campo-busca" type="search" autocomplete="off" placeholder="Ex.: Santa Maria, RS ou Lisboa"
+        aria-controls="resultados" aria-expanded="false" aria-autocomplete="list">
+      <ul id="resultados" class="resultados" hidden></ul>
+    </form>
+  </header>
+
+  <main>
+    <p id="status" class="status" role="status" hidden></p>
+
+    <section id="clima" aria-live="polite" hidden>
+      <p id="aviso" class="aviso" hidden></p>
+
+      <div class="agora">
+        <p id="cidade" class="cidade"></p>
+        <p id="horario" class="horario"></p>
+        <div class="temperatura">
+          <span id="icone" class="icone" aria-hidden="true"></span>
+          <span id="temp" class="temp"></span>
+        </div>
+        <p id="condicao" class="condicao"></p>
+        <p id="sensacao" class="sensacao"></p>
+        <p id="minmax" class="minmax"></p>
+      </div>
+
+      <ul id="detalhes" class="detalhes"></ul>
+
+      <h2>Próximas 24 horas</h2>
+      <div class="rolagem">
+        <ul id="horas" class="horas"></ul>
+      </div>
+
+      <h2>Próximos 7 dias</h2>
+      <ul id="dias" class="dias"></ul>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    Dados: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
+    e <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>.
+  </footer>
+
+  <script src="js/formatacao.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
