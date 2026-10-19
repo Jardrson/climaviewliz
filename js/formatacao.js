@@ -128,3 +128,13 @@ function ordenarPorFiltros(cidades, filtros) {
     .sort((a, b) => b.pontos - a.pontos || a.posicao - b.posicao)
     .map((item) => item.cidade);
 }
+
+// Escolhe o cenário de fundo a partir do código WMO e de dia ou noite.
+function categoriaClima(codigo, ehDia = true) {
+  if ([95, 96, 99].includes(codigo)) return "tempestade";
+  if ((codigo >= 71 && codigo <= 77) || codigo === 85 || codigo === 86) return "neve";
+  if ((codigo >= 51 && codigo <= 67) || (codigo >= 80 && codigo <= 82)) return "chuva";
+  if (codigo === 45 || codigo === 48) return "nevoeiro";
+  if (codigo === 2 || codigo === 3) return "nuvens";
+  return ehDia ? "sol" : "noite";
+}

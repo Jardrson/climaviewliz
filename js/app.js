@@ -86,25 +86,42 @@ function exibirClima({ local, previsao, salvoEm }, offline) {
   $("sensacao").textContent = `Sensação de ${arredondar(atual.apparent_temperature)}°C`;
   $("minmax").textContent = `Máxima ${arredondar(diario.temperature_2m_max[0])}°C · Mínima ${arredondar(diario.temperature_2m_min[0])}°C`;
 
+  aplicarClima(categoriaClima(atual.weather_code, atual.is_day !== 0));
+
   renderizarDetalhes(atual, diario);
   renderizarHoras(previsao.hourly, atual.time);
   renderizarDias(diario);
 
-  $("clima").hidden = false;
+  // Reinicia a animação de entrada a cada cidade.
+  const secao = $("clima");
+  secao.classList.remove("entrar");
+  secao.hidden = false;
+  void secao.offsetWidth;
+  secao.classList.add("entrar");
+}
+
+// Cenário de fundo: o CSS troca as camadas conforme data-clima.
+function aplicarClima(categoria) {
+  document.body.dataset.clima = categoria;
 }
 
 function renderizarDetalhes(atual, diario) {
   const itens = [
-    ["Chance de chuva", percentual(diario.precipitation_probability_max[0])],
-    ["Vento", `${arredondar(atual.wind_speed_10m)} km/h ${direcaoVento(atual.wind_direction_10m)}`.trim()],
-    ["Umidade", percentual(atual.relative_humidity_2m)],
-    ["Índice UV (máx.)", textoUV(diario.uv_index_max[0])],
+    ["🌧️", "Chance de chuva", percentual(diario.precipitation_probability_max[0])],
+    ["💨", "Vento", `${arredondar(atual.wind_speed_10m)} km/h ${direcaoVento(atual.wind_direction_10m)}`.trim()],
+    ["💧", "Umidade", percentual(atual.relative_humidity_2m)],
+    ["☀️", "Índice UV (máx.)", textoUV(diario.uv_index_max[0])],
   ];
 
   $("detalhes").replaceChildren(
-    ...itens.map(([rotulo, valor]) => {
+    ...itens.map(([icone, rotulo, valor], i) => {
       const li = criar("li", "detalhe");
-      li.append(criar("span", "detalhe-rotulo", rotulo), criar("span", "detalhe-valor", valor));
+      li.style.setProperty("--i", i);
+      li.append(
+        decorativo(criar("span", "detalhe-icone", icone)),
+        criar("span", "detalhe-rotulo", rotulo),
+        criar("span", "detalhe-valor", valor)
+      );
       return li;
     })
   );
@@ -120,6 +137,7 @@ function renderizarHoras(horario, horaAtual) {
   for (let i = inicio; i < Math.min(inicio + 24, horario.time.length); i++) {
     const [condicao, icone] = descricaoCondicao(horario.weather_code[i]);
     const li = criar("li", "hora");
+    li.style.setProperty("--i", i - inicio);
     li.append(
       criar("span", "hora-rotulo", i === inicio ? "Agora" : `${horaDeIso(horario.time[i])}`),
       decorativo(criar("span", "hora-icone", icone)),
@@ -137,6 +155,7 @@ function renderizarDias(diario) {
   const itens = diario.time.map((data, i) => {
     const [condicao, icone] = descricaoCondicao(diario.weather_code[i]);
     const li = criar("li", "dia");
+    li.style.setProperty("--i", i);
     li.append(
       criar("span", "dia-rotulo", i === 0 ? "Hoje" : rotuloDia(data)),
       decorativo(criar("span", "dia-icone", icone)),
